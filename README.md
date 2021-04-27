@@ -16,7 +16,12 @@ change IP address to connect to your machine (localhost if monDB is on your mach
 
 /createDB?dbname=PARAMETER1&colname=PARAMETER2
 
+
 /show <= show data from spécific database
 
 /show?dbname=PARAMETER1&colname=PARAMETER2
+
+```example : http://52.168.123.57:3500/show?dbname=madb&colname=fakecollection```
+
+
 
