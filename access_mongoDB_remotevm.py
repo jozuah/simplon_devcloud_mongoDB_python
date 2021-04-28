@@ -9,7 +9,11 @@ from pprint import pprint
 # connect to MongoDB
 # On remplace l'adresse ip par 'localhost' en local
 # Connection sur une VM privée ici
-client = MongoClient('mongodb://10.21.0.5.57:27017/')
+#client = MongoClient('mongodb://10.21.0.5.57:27017/')
+
+#Pour une base cosmos -> Rien a faire juste à mettre l'url fournit par azure
+uri = "mongodb://joshcosmos:p8hIS04t9fCtDIK2XSam5joFcEQBgt3uDKOnJGtH22a5Beaslc8vT6ke5dglRFN3eFBtInNMmJG4fIqAPh7Unw==@joshcosmos.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@joshcosmos@"
+client = MongoClient(uri)
 
 # #Utilisation de la base de donnée déja créé qui s'apppelle 'test'
 # db=client.test
@@ -59,13 +63,23 @@ def show_db():
 #http://52.168.123.57:3500/show?dbname=madb&colname=fakecollection
 @app.route('/show', methods = ['GET', 'POST'])
 def show_data():
-    db_name = request.values.get('dbname')
-    col_name = request.values.get('colname')
-    db = client[db_name]
-    #data = db.fakecollection.find()
-    data = [doc for doc in db[col_name].find({}, {"_id":0})]
-    return jsonify({'cursor': data })
+    if request.method == 'GET':
+        db_name = request.values.get('dbname')
+        col_name = request.values.get('colname')
+        db = client[db_name]
+        #data = db.fakecollection.find()
+        data = [doc for doc in db[col_name].find({}, {"_id":0})]
+        return jsonify({'cursor': data })
+    return "Impossible de montrer des données"
 
+#http://localhost:3500/dropDB?dbname=lol
+@app.route('/dropDB', methods = ['GET', 'POST'])
+def drop_database():
+    if request.method == 'GET':
+        db_name = request.values.get('dbname')
+        client.drop_database(db_name)
+        return f"la base de donnée {db_name} a été supprimé"
+    return "Il manque des arguments pour supprimer une base de donnée "
 
 
 
